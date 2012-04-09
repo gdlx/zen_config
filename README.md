@@ -104,11 +104,11 @@ They'll probably be renamed with a leading underscore in future versions.
 
 ## Goals
 
-1. Provide hierarchical configuration objects => Done!
-2. Bring a read-only lock mode to guarantee config values haven't been modified => Done!
-3. Allow config file loading.
-4. Allow config file writing.
-5. Provide full unit tests.
+- Provide hierarchical configuration objects => Done!
+- Bring a read-only lock mode to guarantee config values haven't been modified => Done!
+- Allow config file loading.
+- Allow config file writing.
+- Provide full unit tests.
 
 ## Known bugs
 
