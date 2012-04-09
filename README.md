@@ -1,6 +1,8 @@
 # ZenConfig
 
-TODO: Write a gem description
+zen_config is an attempt to rewrite Zend Framework's Zend_Config into Ruby.
+
+It allows easy management of configuration objects and files.
 
 ## Installation
 
@@ -18,12 +20,10 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Not usable yet...
 
-## Contributing
+## Goals
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+1. Provide hierarchical configuration objects
+2. Bring a read-only lock mode to guarantee config values haven't been modified
+3. Bring configuration writers
