@@ -8,24 +8,14 @@ class ZenConfig
   def_delegators :@data, :each, :<<
 
   def initialize hash, allow_modifications = false
-    @allow_modifications = !!allow_modifications
+    @allow_modifications = true
     @loaded_section = nil
     @index = 0
     @data = {}
 
-    hash.each do |key, value|
-      key = key.to_sym
+    load_hash hash
 
-      if value.is_a? Hash
-        @data[key] = self.new value, @allow_modifications
-      else
-        @data[key] = value
-      end
-
-      set_key_parent key
-    end
-
-    update_count
+    @allow_modifications = !!allow_modifications
   end
 
   # Keys
@@ -86,6 +76,24 @@ class ZenConfig
   end
 
   #Global
+
+  def load_hash hash
+    if @allow_modifications
+      hash.each do |key, value|
+        key = key.to_sym
+
+        if value.is_a? Hash
+          @data[key] = self.new value, @allow_modifications
+        else
+          @data[key] = value
+        end
+
+        set_key_parent key
+      end
+
+      update_count
+    end
+  end
 
   def merge merge
     raise "Merged configuration must be a ZenConfig" unless merge.kind_of? ZenConfig
