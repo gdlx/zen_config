@@ -15,7 +15,9 @@ class ZenConfig
 
     load_hash hash
 
-    @allow_modifications = !!allow_modifications
+    if allow_modifications
+      read_only
+    end
   end
 
   # Keys
