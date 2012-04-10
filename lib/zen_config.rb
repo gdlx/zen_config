@@ -28,34 +28,7 @@ class ZenConfig
     update_count
   end
 
-  # Accessors
-
-  def get name, default = nil
-    result = default
-
-    if @data.has_key? name
-      result = @data[name]
-    end
-
-    return result
-  end
-
-  def set key, value
-    if @allow_modifications
-      if value.is_a? Hash
-        @data[key] = self.new value, true
-      else
-        @data[key] = value
-      end
-
-      set_key_parent key
-      update_count
-
-      return value
-    end
-  end
-
-  # Data
+  # Keys
 
   def count
     @count
@@ -74,6 +47,16 @@ class ZenConfig
     @data.has_key? key
   end
 
+  def get name, default = nil
+    result = default
+
+    if @data.has_key? name
+      result = @data[name]
+    end
+
+    return result
+  end
+
   def new key, force = false
     key = key.to_sym
 
@@ -84,6 +67,21 @@ class ZenConfig
       else
         raise "'#{key}' key already exists."
       end
+    end
+  end
+
+  def set key, value
+    if @allow_modifications
+      if value.is_a? Hash
+        @data[key] = self.new value, true
+      else
+        @data[key] = value
+      end
+
+      set_key_parent key
+      update_count
+
+      return value
     end
   end
 
