@@ -22,10 +22,12 @@ Or install it yourself as:
 
 Instantiate ZenConfig with a configuration hash :
 
-    config_hash = { :foo => "foo value" }
+    config_hash = { :foo => "foo value", :bar => { :baz => "baz value" } }
     MyConfig = ZenConfig.new config_hash
     MyConfig.foo
      => "foo value"
+    MyConfig.bar.baz
+     => "baz value"
 
 By default, ZenConfig is read only :
 
@@ -35,10 +37,21 @@ By default, ZenConfig is read only :
 But changes can be allowed on build time :
 
     MyConfig = ZenConfig.new config_hash, true
-    MyConfig.foo = "bar value"
-     => "bar value"
+    MyConfig.foo = "new foo value"
+     => "new foo value"
     MyConfig.foo
-     => "bar value"
+     => "new foo value"
+
+ZenConfigs can be converted to hashs :
+
+    MyConfig.to_hash
+     => {:foo=>"new foo value", :bar=>{:baz=>"baz value"}}
+
+Config keys can be deleted (if ZenConfig is unlocked) :
+
+    MyConfig.delete :bar
+    MyConfig.to_hash
+     => {:foo=>"new foo value"}
 
 Then the object can be locked to read only again :
 
@@ -88,17 +101,6 @@ Count keys :
     MyConfig.bar.count
      => 1
 
-ZenConfigs can be converted to hashs :
-
-    MyConfig.to_hash
-     => {:foo=>"bar value", :bar=>{:baz=>"baz value"}}
-
-And finally, config keys can be deleted (if ZenConfig is unlocked) :
-
-    MyConfig.delete :foo
-    MyConfig.to_hash
-     => {:bar=>{:baz=>"baz value"}}
-
 Note : ZenConfig methods are reserved words that can not be used as config keys.
 They'll probably be renamed with a leading underscore in future versions.
 
@@ -112,5 +114,4 @@ They'll probably be renamed with a leading underscore in future versions.
 
 ## Known bugs
 
-- Nested hashs raise an error on init
 - Merging doesn't always work
