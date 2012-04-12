@@ -18,6 +18,36 @@ Or install it yourself as:
 
     $ gem install zen_config
 
+## App integration
+
+Create your config file __config/config.yml__ :
+
+    defaults: &defaults
+      user:
+        name:
+          max_length: 64
+      post:
+        max_length: 140
+    development:
+      <<: defaults
+    production:
+      <<: defaults
+
+Create a new initializer __config/initializers/config.rb__ :
+
+    APP_CONFIG = ZenConfig.new(YAML::load(File.open("#{Rails.root}/config/config.yml"))[Rails.env])
+
+Restrict config scope in your classes :
+
+    class User
+      @config = APP_CONFIG.user
+
+      validates :name, :length => { :maximum => @config.name.max_length }
+
+      [...]
+
+    end
+
 ## Usage
 
 Instantiate ZenConfig with a configuration hash :
