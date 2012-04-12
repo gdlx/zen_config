@@ -82,7 +82,6 @@ class ZenConfig
   def load_hash hash
     if @allow_modifications
       hash.each do |key, value|
-        puts key.to_s + " : " + value.to_s
         key = key.to_sym
 
         if value.is_a? Hash
