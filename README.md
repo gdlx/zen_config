@@ -50,7 +50,7 @@ Restrict config scope in your classes :
 
 ## Usage
 
-Instantiate ZenConfig with a configuration hash :
+###Instantiate ZenConfig with a configuration hash :
 
     config_hash = { :foo => "foo value", :bar => { :baz => "baz value" } }
     MyConfig = ZenConfig.new config_hash
@@ -59,31 +59,20 @@ Instantiate ZenConfig with a configuration hash :
     MyConfig.bar.baz
      => "baz value"
 
-By default, ZenConfig is read only :
+###By default, ZenConfig is read only :
 
     MyConfig.foo = "bar value"
     NoMethodError: undefined method `foo=' for #<ZenConfig:0x00000002ee52f8>
 
-But changes can be allowed on build time :
+###But changes can be allowed on build time :
 
     MyConfig = ZenConfig.new config_hash, true
     MyConfig.foo = "new foo value"
      => "new foo value"
     MyConfig.foo
      => "new foo value"
-
-ZenConfigs can be converted to hashs :
-
-    MyConfig.to_hash
-     => {:foo=>"new foo value", :bar=>{:baz=>"baz value"}}
-
-Config keys can be deleted (if ZenConfig is unlocked) :
-
-    MyConfig.delete :bar
-    MyConfig.to_hash
-     => {:foo=>"new foo value"}
-
-Then the object can be locked to read only again :
+     
+###Then the object can be locked to read only again :
 
     MyConfig.read_only
     MyConfig.read_only?
@@ -91,48 +80,106 @@ Then the object can be locked to read only again :
     MyConfig.foo = "foo value"
     NoMethodError: undefined method `foo=' for #<ZenConfig:0x00000002ee52f8>
 
-And there's no way to unlock write.
+__And there's no way to unlock write.__
+
 This guarantees that ZenConfig data hasn't been altered since read-only lock has been set.
 You should not use unlocked ZenConfig in your application code, since you don't know when and where it has been modified.
 Dynamic persistent writes functions will come in future versions.
 
-Sub configurations can be nested (if ZenConfig object is not locked) :
+###Sub configurations can be nested (if ZenConfig is unlocked) :
 
     MyConfig.new :bar
     MyConfig.bar.baz = "baz value"
 
-Nested configurations are ZenConfigs. This allow accessing configuration on a specific context :
+###Nested configurations are ZenConfigs :
 
     MyBarConfig = MyConfig.bar
     MyBarConfig.class
      => ZenConfig
     MyBarConfig.baz
      => "baz value"
+     
+This allow accessing configuration on a specific context.
 
-Nested ZenConfigs can access their parent :
+###Nested ZenConfigs can access their parent :
 
     MyBarConfig.parent.foo
      => "bar value"
 
-Of course, root ZenConfig has no parent :
+###Of course, root ZenConfig has no parent :
 
     MyConfig.parent
      => nil
 
-You can check if a config key exists :
+###ZenConfigs can be converted to hashs :
 
-    MyConfig.foo_exists?
-     => true
+    MyConfig.to_hash
+     => {:foo=>"new foo value", :bar=>{:baz=>"baz value"}}
 
-Count keys :
+###ZenConfigs subkeys can be parsed :
+
+	MyConfig.each do |key, value|
+	  puts key.to_s + ":" + value.class.to_s
+	end
+	foo:String
+	bar:ZenConfig
+	 => {:foo=>"foo value", :bar=>{:baz=>"baz value"}}
+
+###Counted :
 
     MyConfig.count
      => 2
     MyConfig.bar.count
      => 1
 
-Note : ZenConfig methods are reserved words that can not be used as config keys.
-They'll probably be renamed with a leading underscore in future versions.
+###Checked :
+
+    MyConfig.exists? :bar
+     => true
+     
+or
+
+    MyConfig.bar_exists?
+     => true
+
+###Deleted (if ZenConfig is unlocked) :
+
+    MyConfig.delete :bar
+    MyConfig.to_hash
+     => {:foo=>"new foo value"}
+     
+or
+
+    MyConfig.delete_bar
+    MyConfig.to_hash
+     => {:foo=>"new foo value"}
+
+## Important note on reserved words :
+
+Some words are reserved by Ruby or ZenConfig (public methods or attributes).
+
+The best practice is to avoid using one of these reserved words as keys in your config files, but you can call them by adding an underscore in front of the key.
+
+Using these reserved words can result in strange behaviors :
+
+	MyConfig = ZenConfig.new({ :reject => { :default => 10 } })
+	[...]
+	MyConfig.to_hash
+	 => {:reject=>{:value=>"10"}}
+
+Config is successfully loaded but :
+ 
+	MyConfig.reject.value
+	NoMethodError: undefined method `value' for #<Enumerator:0x000000026fd5b8>
+
+Solution :
+	
+	MyConfig._reject.value
+	 => 10
+
+Reserved words could be reduced by making ZenConfig a BasicObject subclass, but it's not possible as ZenConfig uses Enumerable.
+
+__Anyone knowing how to get the best of both worlds is welcome !__
 
 ## Goals
 
@@ -144,5 +191,4 @@ They'll probably be renamed with a leading underscore in future versions.
 
 ## Known bugs
 
-- Some nested hashs are converted to Enumarators instead of ZenConfigs
 - Merging doesn't always work

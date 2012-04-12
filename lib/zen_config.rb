@@ -28,6 +28,7 @@ class ZenConfig
 
   def delete key
     if @allow_modifications
+      key = key.to_sym
       backup = @data[key]
       @data.delete key
       update_count
@@ -36,14 +37,15 @@ class ZenConfig
   end
 
   def exists? key
-    @data.has_key? key
+    @data.has_key? key.to_sym
   end
 
-  def get name, default = nil
+  def get key, default = nil
+    key = key.to_sym
     result = default
 
-    if @data.has_key? name
-      result = @data[name]
+    if @data.has_key? key
+      result = @data[key]
     end
 
     return result
@@ -63,6 +65,8 @@ class ZenConfig
   end
 
   def set key, value
+    key = key.to_sym
+    
     if @allow_modifications
       if value.is_a? Hash
         @data[key] = self.new value, true
@@ -125,11 +129,11 @@ class ZenConfig
     value = args.first
 
     # Checks if a key exists
-    if /\A(.*)_exists\?\Z/.match method
+    if /\A([a-zA-Z1-9]+)_exists\?\Z/.match method
       exists? $1
 
     # Delete a key
-    elsif /\Adelete_(.*)\Z/.match method
+    elsif /\Adelete_([a-zA-Z1-9]+)\Z/.match method
       delete $1 if exists? $1
 
     # Writes a key value
@@ -139,6 +143,7 @@ class ZenConfig
 
     # Reads a key value
     elsif (args.count == 0)
+      method = method[1..-1] if method[0] == '_'
       get method
 
     # Unknown method
