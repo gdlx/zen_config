@@ -144,4 +144,5 @@ They'll probably be renamed with a leading underscore in future versions.
 
 ## Known bugs
 
+- Some nested hashs are converted to Enumarators instead of ZenConfigs
 - Merging doesn't always work
